@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiApp3.MainPage" FlowDirection="MatchParent">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+        <Button Grid.Row="0" HorizontalOptions="Start"  WidthRequest="65" Text="选择" Background="transparent" TextColor="Black" BorderWidth="0" Clicked="OnCounterClicked"/>
+        <Button Grid.Row="0" HorizontalOptions="End"  WidthRequest="65" Text="保存" Background="transparent" TextColor="Black" BorderWidth="0" Clicked="Button_Clicked"/>
+        <Grid Grid.Row="1" Margin="50">
+            <Grid.Shadow>
+                <Shadow Brush="#666666"
+                Offset="1,1"
+                Opacity="0.5" />
+            </Grid.Shadow>
+            <Image x:Name="pic"
+                SemanticProperties.Description="Cute dot net bot waving hi to you!"
+                HorizontalOptions="Center" />
+        </Grid>
+    </Grid>
+
+</ContentPage>
