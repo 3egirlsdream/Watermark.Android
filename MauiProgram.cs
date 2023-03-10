@@ -10,10 +10,10 @@ public static class MauiProgram
 			.ConfigureFonts(fonts =>
 			{
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold"); 
-				fonts.AddFont("HarmonyOS-Sans.ttf", "HarmonyOS-Sans");
-                fonts.AddFont("HarmonyOS-Sans-Bold.ttf", "HarmonyOS-Sans-Bold");
-            });
+				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+				fonts.AddFont("HarmonyOS-Sans.ttf", "HarmonyOSSans");
+				fonts.AddFont("HarmonyOS-Sans-Bold.ttf", "HarmonyOSSansBold");
+			});
 
 		return builder.Build();
 	}

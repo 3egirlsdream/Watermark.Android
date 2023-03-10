@@ -1,4 +1,5 @@
 ﻿using MauiApp3.Classes;
+using Microsoft.Maui.Controls;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp.Drawing;
 using SixLabors.ImageSharp.Drawing.Processing;
@@ -277,14 +278,14 @@ namespace JointWatermark.Class
         { 
             SixLabors.Fonts.FontFamily? family = null;
             SixLabors.Fonts.FontFamily? familyBold = null;
-            var s = FileSystem.OpenAppPackageFileAsync("HarmonyOS-Sans.ttf").Result;
-            var b = FileSystem.OpenAppPackageFileAsync("HarmonyOS-Sans-Bold.ttf").Result;
+            var stream = FileSystem.OpenAppPackageFileAsync("OpenSans-Regular.ttf").Result;
             var collection2 = new FontCollection();
-            family = collection2.Add(s);
-            familyBold = collection2.Add(b);
+            family = collection2.Add(stream);
+            //familyBold = collection2.Add(b);
             //if (FontFamily == "微软雅黑")
             //{
-            //    family = SixLabors.Fonts.SystemFonts.Get("HarmonyOS-Sans");
+            //var c = SystemFonts.Families.Select(c=>c.Name).ToList();
+                //family = SixLabors.Fonts.SystemFonts.Get("OpenSans-Regular.ttf");
             //}
             //else
             //{
