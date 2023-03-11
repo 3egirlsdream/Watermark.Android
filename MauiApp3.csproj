@@ -6,16 +6,16 @@
 		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
 		<!-- <TargetFrameworks>$(TargetFrameworks);net6.0-tizen</TargetFrameworks> -->
 		<OutputType>Exe</OutputType>
-		<RootNamespace>MauiApp3</RootNamespace>
+		<RootNamespace>Watermark</RootNamespace>
 		<UseMaui>true</UseMaui>
 		<SingleProject>true</SingleProject>
 		<ImplicitUsings>enable</ImplicitUsings>
 
 		<!-- Display name -->
-		<ApplicationTitle>MauiApp3</ApplicationTitle>
+		<ApplicationTitle>水印</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.companyname.mauiapp3</ApplicationId>
+		<ApplicationId>com.jiang.watermark</ApplicationId>
 		<ApplicationIdGuid>d1b5dbe3-7c86-4a50-8f60-5c7927dc923c</ApplicationIdGuid>
 
 		<!-- Versions -->
@@ -28,11 +28,57 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
+		<PackageId>Watermark</PackageId>
+		<Authors>Jiang</Authors>
+		<Company>Jiang</Company>
+		<Product>水印</Product>
+		<PackageIcon>图片.png</PackageIcon>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0-android|AnyCPU'">
+	  <ApplicationTitle>水印</ApplicationTitle>
+	  <ApplicationId>com.jiang.watermark</ApplicationId>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0-android|AnyCPU'">
+	  <ApplicationTitle>水印</ApplicationTitle>
+	  <ApplicationId>com.jiang.watermark</ApplicationId>
+	  <AndroidPackageFormat>apk</AndroidPackageFormat>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0-ios|AnyCPU'">
+	  <ApplicationTitle>Watermark</ApplicationTitle>
+	  <ApplicationId>com.jiang.watermark</ApplicationId>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0-ios|AnyCPU'">
+	  <ApplicationTitle>Watermark</ApplicationTitle>
+	  <ApplicationId>com.jiang.watermark</ApplicationId>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0-maccatalyst|AnyCPU'">
+	  <ApplicationTitle>Watermark</ApplicationTitle>
+	  <ApplicationId>com.jiang.watermark</ApplicationId>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0-maccatalyst|AnyCPU'">
+	  <ApplicationTitle>Watermark</ApplicationTitle>
+	  <ApplicationId>com.jiang.watermark</ApplicationId>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0-windows10.0.19041.0|AnyCPU'">
+	  <ApplicationTitle>水印</ApplicationTitle>
+	  <ApplicationId>com.jiang.watermark</ApplicationId>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0-windows10.0.19041.0|AnyCPU'">
+	  <ApplicationTitle>Watermark</ApplicationTitle>
+	  <ApplicationId>com.jiang.watermark</ApplicationId>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+		<MauiIcon Include="Resources\AppIcon\appicon.png" />
 
 		<!-- Splash Screen -->
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
@@ -52,6 +98,8 @@
 	  <None Remove="HarmonyOS-Sans-Bold.ttf" />
 	  <None Remove="HarmonyOS-Sans.ttf" />
 	  <None Remove="OpenSans-Regular.ttf" />
+	  <None Remove="Platforms\Android\Resources\mipmap\icon.png" />
+	  <None Remove="Resources\AppIcon\icon.png" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -68,6 +116,13 @@
 
 	<ItemGroup>
 	  <MauiAsset Include="HarmonyOS-Sans-Bold.ttf" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="..\..\..\Downloads\图片.png">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
 	</ItemGroup>
 
 	<ItemGroup>

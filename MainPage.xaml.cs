@@ -74,7 +74,7 @@ public partial class MainPage : ContentPage
 
                 reader.GetTagValue(ExifTags.LensModel, out string lensModel);
                 properties.Config.LeftPosition1 = $"{make} {model}";
-                properties.Config.LeftPosition2 = date.ToString();
+                properties.Config.LeftPosition2 = date.ToString("yyyy/MM/dd HH:mm:ss");
                 var time = 1/exposureTime;
                 properties.Config.RightPosition1 = $"F{fnumber} 1/{time}S ISO{iso2} {focal}mm";
                 properties.Config.RightPosition2 = lensModel;
