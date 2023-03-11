@@ -32,15 +32,24 @@
                 Offset="1,1"
                 Opacity="0.2" />
             </Grid.Shadow>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="7*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="7*"/>
+                <ColumnDefinition Width="4*"/>
             </Grid.ColumnDefinitions>
-            <Image Grid.Column="0" x:Name="logo" HorizontalOptions="Center" VerticalOptions="Start"/>
-            <Polyline Grid.Column="0" BackgroundColor="LightGray" WidthRequest="1" HorizontalOptions="End" Margin="0,5,0,5"/>
-            <Image Grid.Column="1" x:Name="pic"
-                SemanticProperties.Description="Cute dot net bot waving hi to you!"
+            <Polyline Grid.Column="0" Grid.RowSpan="2" BackgroundColor="LightGray" WidthRequest="1" HorizontalOptions="End" Margin="0,5,0,5"/>
+            <Image Grid.Column="0" x:Name="pic" Margin="5"
+                   VerticalOptions="Start"
                 HorizontalOptions="Center" />
+            <Image Grid.Column="2" x:Name="preview" Margin="5"
+                   VerticalOptions="Start"
+                HorizontalOptions="Center" />
+
+            <Line Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" HeightRequest="1" BackgroundColor="LightGray" VerticalOptions="Start" Margin="10,0"/>
+            <Image Grid.Column="1" Grid.Row="1" x:Name="logo" HorizontalOptions="Start" Margin="10"/>
         </Grid>
         <Label x:Name="msg" Grid.Row="3" VerticalOptions="Center" HorizontalOptions="Center"/>
     </Grid>

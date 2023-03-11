@@ -6,6 +6,7 @@ using SixLabors.Fonts;
 using ExifLib;
 using SixLabors.ImageSharp;
 using Microsoft.Maui;
+using MauiApp3.Classes;
 
 namespace MauiApp3;
 
@@ -20,55 +21,45 @@ public partial class MainPage : ContentPage
 
     private async void OnCounterClicked(object sender, EventArgs e)
     {
-        //count++;
-
-        //if (count == 1)
-        //	CounterBtn.Text = $"Clicked {count} time";
-        //else
-        //	CounterBtn.Text = $"Clicked {count} times";
-        msg.Text = "开始";
         SkiaSharpVersion(PickOptions.Images);
 
 
     }
     FileResult logoFileResult;
+    FileResult imageFileResult;
     public async void SkiaSharpVersion(PickOptions options)
 
     {
-        var result = await FilePicker.Default.PickAsync(options);
-        if (result == null)
+        imageFileResult = await FilePicker.Default.PickAsync(options);
+        if (imageFileResult == null)
             return;
-        if (
-        !(result.FileName.EndsWith("jpg", StringComparison.OrdinalIgnoreCase) ||
-            result.FileName.EndsWith("png", StringComparison.OrdinalIgnoreCase))
-            ) return;
+        if (!imageFileResult.FileName.EndsWith("jpg", StringComparison.OrdinalIgnoreCase)) return;
 
-        var stream1 = await result.OpenReadAsync();
-        var stream2 = await result.OpenReadAsync();
-        var stream3 = await result.OpenReadAsync();
+        var stream3 = await imageFileResult.OpenReadAsync();
         pic.Source = ImageSource.FromStream(() => stream3);
+        var stream1 = await imageFileResult.OpenReadAsync();
+        var stream2 = await imageFileResult.OpenReadAsync();
         var sKTypeface_B = SKTypeface.FromStream(FileSystem.OpenAppPackageFileAsync("HarmonyOS-Sans-Bold.ttf").Result);
         var sKTypeface = SKTypeface.FromStream(FileSystem.OpenAppPackageFileAsync("HarmonyOS-Sans.ttf").Result);
         if (logoFileResult == null) return;
         stream4 = await logoFileResult.OpenReadAsync();
-        CreateWatermark(stream1, stream2, stream4, new ImageProperties("", ""), sKTypeface, sKTypeface_B);
+        CreateWatermark(stream1, stream2, stream4, new ImageProperties("", ""), sKTypeface, sKTypeface_B, true);
 
-       
     }
 
 
-    private void CreateWatermark(System.IO.Stream stream, System.IO.Stream stream2, System.IO.Stream logoStream, ImageProperties properties, SKTypeface sKTypeface, SKTypeface sKTypeface_B)
+    private void CreateWatermark(System.IO.Stream stream, System.IO.Stream stream2, System.IO.Stream logoStream, ImageProperties properties, SKTypeface sKTypeface, SKTypeface sKTypeface_B, bool isPreview = false)
     {
         var logo = SKBitmap.Decode(logoStream);
         using (var img = SKBitmap.Decode(stream))
-        { 
+        {
             //旋转图片
             for (int i = 0; i < properties.Config.RotateCount; i++)
             {
                 //img.r.Mutate(x => x.Rotate(RotateMode.Rotate90));
             }
             ExifLib.ExifReader reader = new ExifLib.ExifReader(stream2);
-            if(reader != null)
+            if (reader != null)
             {
                 reader.GetTagValue(ExifTags.DateTimeOriginal, out DateTime date);
                 reader.GetTagValue(ExifTags.Model, out string model);
@@ -88,6 +79,27 @@ public partial class MainPage : ContentPage
                 properties.Config.RightPosition1 = $"F{fnumber} 1/{time}S ISO{iso2} {focal}mm";
                 properties.Config.RightPosition2 = lensModel;
             }
+            var config = Global.GetDefaultExifConfig(new Dictionary<string, object>());
+            var right1 = config[2];
+            var right2 = config[3];
+            var left1 = config[0];
+            var left2 = config[1];
+            if (string.IsNullOrEmpty(properties.Config.LeftPosition1))
+            {
+                properties.Config.LeftPosition1 = left1;
+            }
+            if (string.IsNullOrEmpty(properties.Config.LeftPosition2))
+            {
+                properties.Config.LeftPosition2 = left2;
+            }
+            if (string.IsNullOrEmpty(properties.Config.RightPosition1))
+            {
+                properties.Config.RightPosition1 = right1;
+            }
+            if (string.IsNullOrEmpty(properties.Config.RightPosition2))
+            {
+                properties.Config.RightPosition2 = right2;
+            }
 
             //var imageMetaData = img.GetExifData;
             var w = img.Width;
@@ -103,10 +115,9 @@ public partial class MainPage : ContentPage
             //下面定义一个矩形区域      
             var waterWidth = (int)(logo.Width * xs);
             var waterHeight = (int)(logo.Height * xs);
-            using (SKBitmap temp = new SKBitmap(waterWidth, waterHeight))
-            {
-                logo.Resize(temp, SKBitmapResizeMethod.Lanczos3);
-            }
+            SKBitmap logoResized = new SKBitmap(waterWidth, waterHeight);
+            logo.Resize(logoResized, SKBitmapResizeMethod.Lanczos3);
+
 
             using (SKBitmap outputBitmap = new SKBitmap(w, img.Height + (int)h))
             {
@@ -138,11 +149,11 @@ public partial class MainPage : ContentPage
                     //计算水印2行文字的总体高度
                     //var _font = family.CreateFont(font20, SixLabors.Fonts.FontStyle.Regular);
                     var _fontSize = MeasureText("A", sKTypeface, font20);
-                    var twoLineWordTotalHeight = 1.04 * TextSize.Height + _fontSize.Height;
+                    var twoLineWordTotalHeight = 1.04 * fontSize + font20;
 
                     //绘制第右侧一行文字
                     var start = w - TextSize.Width - padding_right.Width;
-                    var startHeight = (h - twoLineWordTotalHeight) / 2;
+                    var startHeight = (h - twoLineWordTotalHeight) / 2 + TextSize.Height;
                     var Params = new SixLabors.ImageSharp.PointF(start, (int)startHeight);
 
                     using (SKPaint textPaint = new SKPaint() { Color = SKColors.Black, TextSize = fontSize, Typeface = sKTypeface_B })
@@ -151,7 +162,7 @@ public partial class MainPage : ContentPage
                     }
                     //绘制右侧第二行文字
 
-                    var XY = new SixLabors.ImageSharp.PointF(Params.X, (int)(Params.Y + 1.04 * TextSize.Height));
+                    var XY = new SixLabors.ImageSharp.PointF(Params.X, (int)(Params.Y + 1.04 * fontSize));
                     //145, 145, 145
                     using (SKPaint textPaint = new SKPaint() { Color = SKColors.Gray, TextSize = font20, Typeface = sKTypeface })
                     {
@@ -160,21 +171,22 @@ public partial class MainPage : ContentPage
 
                     //绘制竖线
                     var font20Size = MeasureText("A", sKTypeface, font20);
-                    var lStart = new SixLabors.ImageSharp.PointF(Params.X - (int)(oneSize.Width * 0.6), (int)(0.5*(h - logo.Height)));
+                    var lStart = new SixLabors.ImageSharp.PointF(Params.X - (int)(oneSize.Width * 0.6), (int)(0.5*(h - logoResized.Height)));
                     var lEnd = new SixLabors.ImageSharp.PointF(lStart.X, (int)(h - lStart.Y));
 
                     using (SKPaint textPaint = new SKPaint() { Color = SKColors.LightGray, TextSize = 2 * fontxs, Typeface = sKTypeface })
                     {
                         canvas.DrawLine(lStart.X, lStart.Y + img.Height, lEnd.X, lEnd.Y + img.Height, textPaint);
+                        canvas.DrawLine(lStart.X+1, lStart.Y + img.Height, lEnd.X+1, lEnd.Y + img.Height, textPaint);
                     }
 
                     //绘制LOGO
-                    var line = new SixLabors.ImageSharp.Point((int)(lStart.X - (int)(oneSize.Width * 0.6) - logo.Width), (int)(0.5*(h - logo.Height)));
+                    var line = new SixLabors.ImageSharp.Point((int)(lStart.X - (int)(oneSize.Width * 0.6) - logoResized.Width), (int)(0.5*(h - logoResized.Height)));
                     //wm.Mutate(x => x.DrawImage(logo, line, 1));
                     using (SKPaint textPaint = new SKPaint() { Color = SKColors.LightGray, TextSize = 2 * fontxs, Typeface = sKTypeface })
                     {
-                        SKImage image = SKImage.FromBitmap(logo);
-                        canvas.DrawImage(image, line.X, line.Y + img.Height);
+                        SKImage image2 = SKImage.FromBitmap(logoResized);
+                        canvas.DrawImage(image2, line.X, line.Y + img.Height);
                     }
 
                     //左边距系数
@@ -198,22 +210,28 @@ public partial class MainPage : ContentPage
                     }
 
                     // Save the output bitmap to a file
-                    using (SKImage image = SKImage.FromBitmap(outputBitmap))
-                    using (SKData data = image.Encode(SKEncodedImageFormat.Jpeg, 100))
+                    SKImage image = SKImage.FromBitmap(outputBitmap);
+                    SKData data = image.Encode(SKEncodedImageFormat.Jpeg, 100);
+
+                    if (isPreview)
                     {
-                        string p1 = "";
+                        var s = data.AsStream(false);
+                        preview.Source = ImageSource.FromStream(() => s);
+                        return;
+                    }
+                    string p1 = "";
 #if WINDOWS
-p1 = "C:\\Users\\kingdee\\Desktop\\" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".jpg";
+p1 = "C:\\Users\\Jiang\\Desktop\\" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".jpg";
 #endif
 #if ANDROID
                         p1 = System.IO.Path.Combine("/storage/emulated/0/DCIM/Camera/", DateTime.Now.ToString("yyyyMMddHHmmss") + ".jpg");
 #endif
-                        using (FileStream rs = new FileStream(p1, FileMode.Create, FileAccess.Write))
-                        {
-                            data.SaveTo(rs);
-                            msg.Text = "结束";
-                        }
+                    using (FileStream rs = new FileStream(p1, FileMode.Create, FileAccess.Write))
+                    {
+                        data.SaveTo(rs);
+                        msg.Text = "结束";
                     }
+
                 }
             }
 
@@ -222,87 +240,34 @@ p1 = "C:\\Users\\kingdee\\Desktop\\" + DateTime.Now.ToString("yyyyMMddHHmmss") +
     }
 
 
-
-    public async Task<FileResult> PickAndShow(PickOptions options)
+    private async void Button_Clicked(object sender, EventArgs e)
     {
         try
         {
-            var result = await FilePicker.Default.PickAsync(options);
-            if (result != null)
+            msg.Text  = "保存中...";
+            var stream1 = await imageFileResult.OpenReadAsync();
+            var stream2 = await imageFileResult.OpenReadAsync();
+            var sKTypeface_B = SKTypeface.FromStream(FileSystem.OpenAppPackageFileAsync("HarmonyOS-Sans-Bold.ttf").Result);
+            var sKTypeface = SKTypeface.FromStream(FileSystem.OpenAppPackageFileAsync("HarmonyOS-Sans.ttf").Result);
+            if (logoFileResult == null)
             {
-                if (result.FileName.EndsWith("jpg", StringComparison.OrdinalIgnoreCase) ||
-                    result.FileName.EndsWith("png", StringComparison.OrdinalIgnoreCase))
-                {
-                    var stream = await result.OpenReadAsync();
-                    var stream2 = await result.OpenReadAsync();
-                    var stream3 = await result.OpenReadAsync();
-                    var i = ImagesHelper.Current.ReadImage(stream, result.FileName, "");
-                    var rs = await ImagesHelper.Current.MergeWatermark(stream2, stream3, i);
-                    var s1 = new MemoryStream();
-
-                    rs.Save(s1, new JpegEncoder());
-                    rs.Save(saveStream, new JpegEncoder());
-                    //s1.CopyTo(saveStream);
-                    //rs.Save(saveStream, new JpegEncoder());
-                    s1.Position = 0;
-                    pic.Source = ImageSource.FromStream(() => s1);
-
-                }
-
+                msg.Text  = "请选择LOGO";
+                return;
             }
-
-            return result;
-        }
-        catch (Exception ex)
-        {
-            throw ex;// The user canceled or something went wrong
-        }
-
-        return null;
-    }
-
-    private void Button_Clicked(object sender, EventArgs e)
-    {
-#if WINDOWS
-        if (saveStream != null)
-        {
-            var bytes = saveStream.ToArray();
-            var filePath = "C:\\Users\\kingdee\\Desktop\\" + "output_image.jpg";
-            File.WriteAllBytes(filePath, bytes);
-        }
-#endif
-
-
-#if ANDROID
-        try
-        {
-            //var mediaDir = FileSystem.;
-            var p = System.IO.Path.Combine("/storage/emulated/0/DCIM/Camera/", DateTime.Now.ToString("yyyyMMddHHmmss") + ".jpg");
-            var dest = File.OpenWrite(p);
-            saveStream.CopyTo(dest);
-            
+            stream4 = await logoFileResult.OpenReadAsync();
+            CreateWatermark(stream1, stream2, stream4, new ImageProperties("", ""), sKTypeface, sKTypeface_B);
+            msg.Text  ="保存成功";
         }
         catch (Exception ex)
         {
 
         }
-        //if (saveStream == null) return;
-        //Microsoft.Maui.Graphics.IImage image = Microsoft.Maui.Graphics.Platform.PlatformImage.FromStream(saveStream);
 
-        //// Save image to a memory stream
-        //if (image != null)
-        //{
-        //    Microsoft.Maui.Graphics.IImage newImage = image.Downsize(150, true);
-        //    using (MemoryStream memStream = new MemoryStream())
-        //    {
-        //        newImage.Save(memStream);
-        //    }
-
-        //}
-#endif
 
 
     }
+
+
     System.IO.Stream stream4 = new MemoryStream();
     private async void Button_Clicked_1(object sender, EventArgs e)
     {
@@ -327,6 +292,8 @@ p1 = "C:\\Users\\kingdee\\Desktop\\" + DateTime.Now.ToString("yyyyMMddHHmmss") +
         };
         sKPaint.Typeface = sKTypeface;
         sKPaint.TextSize = fontSize;
+        sKPaint.TextAlign = SKTextAlign.Center;
+        sKPaint.Style = SKPaintStyle.Fill;
         SKRect sKRect = new SKRect();
         sKPaint.MeasureText(text, ref sKRect);
         return sKRect;
