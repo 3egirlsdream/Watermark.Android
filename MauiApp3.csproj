@@ -95,11 +95,18 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiImage Remove="Resources\Images\zfb.png" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <None Remove="HarmonyOS-Sans-Bold.ttf" />
 	  <None Remove="HarmonyOS-Sans.ttf" />
 	  <None Remove="OpenSans-Regular.ttf" />
 	  <None Remove="Platforms\Android\Resources\mipmap\icon.png" />
 	  <None Remove="Resources\AppIcon\icon.png" />
+	  <None Remove="Resources\Images\rotate.png" />
+	  <None Remove="Resources\Images\save.png" />
+	  <None Remove="Resources\Images\zfb.png" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -116,13 +123,6 @@
 
 	<ItemGroup>
 	  <MauiAsset Include="HarmonyOS-Sans-Bold.ttf" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <None Include="..\..\..\Downloads\图片.png">
-	    <Pack>True</Pack>
-	    <PackagePath>\</PackagePath>
-	  </None>
 	</ItemGroup>
 
 	<ItemGroup>
