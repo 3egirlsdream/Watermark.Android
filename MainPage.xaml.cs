@@ -80,6 +80,7 @@ public partial class MainPage : ContentPage
         try
         {
             var item = await MediaPicker.Default.PickPhotoAsync();
+            if (item == null) return;
             var imageFileResults = new List<FileResult>
             {
                 item
@@ -301,10 +302,10 @@ public partial class MainPage : ContentPage
                         }
                         string p1 = "";
 #if WINDOWS
-p1 = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + "\\" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".jpg";
+p1 = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + "\\" + properties.Name + DateTime.Now.ToString("yyMMddHHmmss") + ".jpg";
 #endif
 #if ANDROID
-                        p1 = System.IO.Path.Combine("/storage/emulated/0/DCIM/Camera/", DateTime.Now.ToString("yyyyMMddHHmmss") + ".jpg");
+                        p1 = System.IO.Path.Combine("/storage/emulated/0/DCIM/Camera/", properties.Name +  DateTime.Now.ToString("yyMMddHHmmss") + ".jpg");
 #endif
                         using (FileStream rs = new FileStream(p1, FileMode.Create, FileAccess.Write))
                         {
@@ -387,6 +388,8 @@ p1 = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + "\\
                 if (properties.TryGetValue(i, out var p))
                 {
                     await Task.Delay(100);
+                    var name = i.Substring(i.LastIndexOf('/') + 1, i.LastIndexOf('.') - i.LastIndexOf('/') - 1) + "_";
+                    p.Name = name;
                     await CreateWatermark(p, sKTypeface, sKTypeface_B);
                     await Task.Delay(100);
                 }
