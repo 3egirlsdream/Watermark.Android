@@ -8,8 +8,6 @@
             <RowDefinition Height="50"/>
             <RowDefinition Height="10"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         <Grid Margin="10,5" Background="#f3f3f3">
             <Grid.Shadow>
@@ -26,6 +24,19 @@
 
         </Grid>
         <Line Grid.Row="1" HeightRequest="1" BackgroundColor="LightGray" Margin="10,0"/>
+        
+        <Border x:Name="toast" IsVisible="false" Grid.Row="2" HorizontalOptions="Center" VerticalOptions="Start" Background="#fff" ZIndex="10" Padding="20,10" StrokeThickness="0" Margin="0,20,0,0">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="5" />
+            </Border.StrokeShape>
+            <Border.Shadow>
+                <Shadow Brush="black"
+                Offset="1,1"
+                Opacity="0.2" />
+            </Border.Shadow>
+            <Label x:Name="msg" VerticalOptions="Center" HorizontalOptions="Center"/>
+        </Border>
+        
         <Border x:Name="loading" Grid.Row="2" HorizontalOptions="Center" VerticalOptions="Center" Background="#fff" ZIndex="10" Padding="50" StrokeThickness="0">
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="10" />
@@ -37,7 +48,7 @@
             </Border.Shadow>
             <ActivityIndicator IsRunning="true"  VerticalOptions="Center" HorizontalOptions="Center"/>
         </Border>
-       
+
 
         <Grid Grid.Row="2" Margin="10" Background="#f3f3f3" >
             <Grid.Shadow>
@@ -62,10 +73,11 @@
                 HorizontalOptions="Center" />
 
             <Line Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" HeightRequest="1" BackgroundColor="LightGray" VerticalOptions="Start" Margin="10,0"/>
-            <HorizontalStackLayout x:Name="logoes" Grid.Column="1" Grid.Row="1">
-            </HorizontalStackLayout>
+            <ScrollView  Grid.Column="1"  Grid.Row="1">
+                <FlexLayout x:Name="logoes" Wrap="Wrap" JustifyContent="Start">
+                </FlexLayout>
+            </ScrollView>
         </Grid>
-        <Label x:Name="msg" Grid.Row="3" VerticalOptions="Center" HorizontalOptions="Center"/>
     </Grid>
 
 </ContentPage>

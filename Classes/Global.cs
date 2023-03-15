@@ -1,15 +1,5 @@
 ﻿using Newtonsoft.Json;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Processing;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MauiApp3.Classes
 {
@@ -22,74 +12,6 @@ namespace MauiApp3.Classes
         public static string Path_logo { get; set; }
         public static string Http { get; set; } = "http://thankful.top:4396";
 
-
-
-        public static dynamic GetThumbnailPath(Stream stream)
-        {
-            var bp = SixLabors.ImageSharp.Image.Load(stream);
-
-            var profile = bp.Metadata.ExifProfile?.Values;
-            var meta = new Dictionary<string, object>();
-            if (profile != null)
-            {
-                var meta_origin = profile.Select(x => new
-                {
-                    Key = x.Tag.ToString(),
-                    Value = x.GetValue() is ushort[]? ((ushort[])x.GetValue())[0] : x.GetValue()
-                });
-
-                foreach (var item in meta_origin)
-                {
-                    meta[item.Key] = item.Value;
-                }
-                if (meta.ContainsKey("ExposureProgram"))
-                {
-                    meta["ExposureProgram"] = ExposureProgram[Convert.ToInt32(meta["ExposureProgram"])];
-                }
-
-                if (meta.ContainsKey("FNumber") && meta["FNumber"] is SixLabors.ImageSharp.Rational rational && rational.Denominator != 0)
-                {
-                    meta["FNumber"] = rational.Numerator * 1.0 / rational.Denominator;
-                }
-            }
-
-            var config = GetDefaultExifConfig(meta);
-
-            var right1 = config[2];
-            var right2 = config[3];
-            var left1 = config[0];
-            var left2 = config[1];
-
-            if (bp.Width <= 1920 || bp.Height <= 1080)
-            {
-                return new
-                {
-                    right1,
-                    left1,
-                    right2,
-                    left2,
-                }; ;
-            }
-            var xs = bp.Width / 1920M;
-
-            var w = (int)(bp.Width / xs);
-            var h = (int)(bp.Height / xs);
-            bp.Mutate(x => x.Resize(w, h));
-            //try
-            //{
-            //    bp.SaveAsJpeg(p);
-            //}
-            //catch { }
-            return new
-            {
-                //path = p,
-                right1,
-                left1,
-                right2,
-                left2,
-            };
-
-        }
 
         public static Dictionary<int, string> ExposureProgram { get; set; } = new Dictionary<int, string>()
         {

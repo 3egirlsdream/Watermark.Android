@@ -1,27 +1,18 @@
-﻿using JointWatermark.Class;
-using SixLabors.ImageSharp.Formats.Jpeg;
-//using Microsoft.Maui.Graphics.Platform;
-using SkiaSharp;
-using SixLabors.Fonts;
-using ExifLib;
-using SixLabors.ImageSharp;
-using Microsoft.Maui;
+﻿using ExifLib;
+using JointWatermark.Class;
 using MauiApp3.Classes;
-using System.IO;
-using System.Diagnostics;
-using Microsoft.Maui.Dispatching;
+using SkiaSharp;
 
 namespace MauiApp3;
 
 public partial class MainPage : ContentPage
 {
-    int count = 0;
-    MemoryStream saveStream = new MemoryStream();
     SKTypeface sKTypeface_B;
     SKTypeface sKTypeface;
     string currentLogoPath;
     List<string> ImagesFilePath;
     string selectedImagePath;
+    Dictionary<string, ImageProperties> properties;
     public MainPage()
     {
         InitializeComponent();
@@ -41,8 +32,10 @@ public partial class MainPage : ContentPage
         {
             Microsoft.Maui.Controls.Image image = new Microsoft.Maui.Controls.Image();
             image.Margin = new Thickness(2);
-            image.Background = new Microsoft.Maui.Controls.SolidColorBrush(Microsoft.Maui.Graphics.Color.FromArgb("#fff"));
-            image.Source = ImageSource.FromFile(f2.FullName);
+            //image.Background = new Microsoft.Maui.Controls.SolidColorBrush(Microsoft.Maui.Graphics.Color.FromArgb("#fff"));
+            image.HeightRequest = 30;
+            image.WidthRequest = 30; 
+            image.Source = f2.FullName;
             TapGestureRecognizer tap = new TapGestureRecognizer();
             tap.Tapped += Tap_Tapped;
             image.GestureRecognizers.Add(tap);
@@ -67,7 +60,7 @@ public partial class MainPage : ContentPage
             }
             catch (Exception ex)
             {
-                msg.Text = ex.Message;
+               ShowErrorMsg(ex.Message);
             }
             finally
             {
@@ -81,7 +74,7 @@ public partial class MainPage : ContentPage
     {
         SkiaSharpVersion(PickOptions.Images);
     }
-    Dictionary<string, ImageProperties> properties;
+
     public async void SkiaSharpVersion(PickOptions options)
     {
         try
@@ -113,7 +106,7 @@ public partial class MainPage : ContentPage
         }
         catch(Exception ex)
         {
-            msg.Text = ex.Message;
+            ShowErrorMsg(ex.Message);
         }
         finally
         {
@@ -137,7 +130,7 @@ public partial class MainPage : ContentPage
             }
             catch (Exception ex)
             {
-                msg.Text = ex.Message;
+                ShowErrorMsg(ex.Message);
             }
             finally
             {
@@ -146,7 +139,7 @@ public partial class MainPage : ContentPage
         }
     }
 
-    public static SKBitmap Rotate(SKBitmap bitmap)
+    public SKBitmap Rotate(SKBitmap bitmap)
     {
         var rotated = new SKBitmap(bitmap.Height, bitmap.Width);
 
@@ -166,12 +159,11 @@ public partial class MainPage : ContentPage
         return Task.Run(() =>
         {
 
-
             if (string.IsNullOrEmpty(currentLogoPath))
             {
                 App.Current.Dispatcher.DispatchAsync(new Action(() =>
                 {
-                    msg.Text= "请选选择Logo";
+                    ShowErrorMsg("请选选择Logo");
                 }));
                 return;
             }
@@ -179,7 +171,7 @@ public partial class MainPage : ContentPage
             {
                 App.Current.Dispatcher.DispatchAsync(new Action(() =>
                 {
-                    msg.Text= "请选选择图片";
+                    ShowErrorMsg("请选选择图片");
                 }));
                 return;
             }
@@ -227,7 +219,6 @@ public partial class MainPage : ContentPage
                         };
 
                         //右侧F ISO MM字体参数
-                        FontFamily family = SystemFonts.Families.FirstOrDefault();
                         float fontSize = 31 * fontxs;
                         var font20 = (24 * fontxs);
                         var TextSize = MeasureText(properties.Config.RightPosition1, sKTypeface_B, fontSize);
@@ -241,7 +232,7 @@ public partial class MainPage : ContentPage
                         //绘制第右侧一行文字
                         var start = w - TextSize.Width - padding_right.Width;
                         var startHeight = (h - twoLineWordTotalHeight) / 2 + TextSize.Height;
-                        var Params = new SixLabors.ImageSharp.PointF(start, (int)startHeight);
+                        var Params = new SKPoint(start, (int)startHeight);
 
                         using (SKPaint textPaint = new SKPaint() { Color = SKColors.Black, TextSize = fontSize, Typeface = sKTypeface_B })
                         {
@@ -249,7 +240,7 @@ public partial class MainPage : ContentPage
                         }
                         //绘制右侧第二行文字
 
-                        var XY = new SixLabors.ImageSharp.PointF(Params.X, (int)(Params.Y + 1.04 * fontSize));
+                        var XY = new SKPoint(Params.X, (int)(Params.Y + 1.04 * fontSize));
                         //145, 145, 145
                         using (SKPaint textPaint = new SKPaint() { Color = SKColors.Gray, TextSize = font20, Typeface = sKTypeface })
                         {
@@ -258,8 +249,8 @@ public partial class MainPage : ContentPage
 
                         //绘制竖线
                         var font20Size = MeasureText("A", sKTypeface, font20);
-                        var lStart = new SixLabors.ImageSharp.PointF(Params.X - (int)(oneSize.Width * 0.6), (int)(0.5*(h - logoResized.Height)));
-                        var lEnd = new SixLabors.ImageSharp.PointF(lStart.X, (int)(h - lStart.Y));
+                        var lStart = new SKPoint(Params.X - (int)(oneSize.Width * 0.6), (int)(0.5*(h - logoResized.Height)));
+                        var lEnd = new SKPoint(lStart.X, (int)(h - lStart.Y));
 
                         using (SKPaint textPaint = new SKPaint() { Color = SKColors.LightGray, TextSize = 2 * fontxs, Typeface = sKTypeface })
                         {
@@ -268,7 +259,7 @@ public partial class MainPage : ContentPage
                         }
 
                         //绘制LOGO
-                        var line = new SixLabors.ImageSharp.Point((int)(lStart.X - (int)(oneSize.Width * 0.6) - logoResized.Width), (int)(0.5*(h - logoResized.Height)));
+                        var line = new SKPoint((int)(lStart.X - (int)(oneSize.Width * 0.6) - logoResized.Width), (int)(0.5*(h - logoResized.Height)));
                         using (SKPaint textPaint = new SKPaint() { Color = SKColors.LightGray, TextSize = 2 * fontxs, Typeface = sKTypeface })
                         {
                             SKImage image2 = SKImage.FromBitmap(logoResized);
@@ -280,14 +271,14 @@ public partial class MainPage : ContentPage
 
                         //绘制设备信息
                         var font28 = (34 * fontxs);
-                        var Producer = new SixLabors.ImageSharp.PointF((int)(leftWidth), Params.Y);
+                        var Producer = new SKPoint((int)(leftWidth), Params.Y);
                         using (SKPaint textPaint = new SKPaint() { Color = SKColors.Black, TextSize = font28, Typeface = sKTypeface_B })
                         {
                             canvas.DrawText(properties.Config.LeftPosition1, new SKPoint(Producer.X, (int)Producer.Y + img.Height), textPaint);
                         }
 
                         //绘制时间
-                        var Date = new SixLabors.ImageSharp.PointF(Producer.X, XY.Y);
+                        var Date = new SKPoint(Producer.X, XY.Y);
                         using (SKPaint textPaint = new SKPaint() { Color = SKColors.Gray, TextSize = font20, Typeface = sKTypeface })
                         {
                             canvas.DrawText(properties.Config.LeftPosition2, new SKPoint(Date.X, (int)Date.Y + img.Height), textPaint);
@@ -317,7 +308,7 @@ p1 = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + "\\
                             data.SaveTo(rs);
                             App.Current.Dispatcher.DispatchAsync(new Action(() =>
                             {
-                                msg.Text= "结束";
+                                ShowToast("结束");
                             }));
                         }
 
@@ -329,7 +320,7 @@ p1 = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + "\\
         });
     }
 
-    private static ImageProperties LoadExifInfo(Stream stream2 )
+    private ImageProperties LoadExifInfo(Stream stream2 )
     {
         var properties = new ImageProperties("", "");
         ExifLib.ExifReader reader = new ExifLib.ExifReader(stream2);
@@ -381,7 +372,7 @@ p1 = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + "\\
     {
         try
         {
-            msg.Text = "保存中...";
+            ShowToast("保存中...");
             loading.IsVisible = true;
             foreach(var i in ImagesFilePath)
             {
@@ -391,12 +382,12 @@ p1 = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + "\\
                     await CreateWatermark(p, sKTypeface, sKTypeface_B);
                 }
             }
-            msg.Text = "保存成功";
+            ShowToast("保存成功");
             loading.IsVisible = false;
         }
         catch (Exception ex)
         {
-            msg.Text = ex.Message;
+            ShowErrorMsg(ex.Message);
         }
         finally
         {
@@ -457,12 +448,31 @@ p1 = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + "\\
         }
         catch(Exception ex)
         {
-            msg.Text = ex.Message;
+            ShowErrorMsg(ex.Message);
         }
         finally
         {
             loading.IsVisible = false;
         }
+    }
+
+    private async void ShowErrorMsg(string msg)
+    {
+        await DisplayAlert("出错了", msg, "关闭");
+    }
+
+    private  void ShowToast(string msg)
+    {
+        this.msg.Text = msg;
+        toast.IsVisible = true;
+        Task.Delay(3000).ContinueWith(t =>
+        {
+            Application.Current.Dispatcher.Dispatch(new Action(() =>
+            {
+                toast.IsVisible = false;
+            }));
+            
+        });
     }
 }
 

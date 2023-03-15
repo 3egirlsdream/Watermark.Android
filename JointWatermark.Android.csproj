@@ -101,7 +101,6 @@
 	<ItemGroup>
 	  <None Remove="HarmonyOS-Sans-Bold.ttf" />
 	  <None Remove="HarmonyOS-Sans.ttf" />
-	  <None Remove="OpenSans-Regular.ttf" />
 	  <None Remove="Platforms\Android\Resources\mipmap\icon.png" />
 	  <None Remove="Resources\AppIcon\icon.png" />
 	  <None Remove="Resources\Images\rotate.png" />
@@ -111,10 +110,6 @@
 
 	<ItemGroup>
 	  <MauiAsset Include="ExifConfig.json" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <MauiAsset Include="OpenSans-Regular.ttf" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -128,9 +123,6 @@
 	<ItemGroup>
 	  <PackageReference Include="ExifLib" Version="1.7.0" />
 	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-	  <PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta19" />
-	  <PackageReference Include="SixLabors.ImageSharp" Version="3.0.0" />
-	  <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta15" />
 	  <PackageReference Include="SkiaSharp" Version="2.88.3" />
 	</ItemGroup>
 

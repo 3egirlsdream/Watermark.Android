@@ -1,11 +1,4 @@
-﻿using SixLabors.Fonts;
-using SixLabors.ImageSharp;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text;
-
-namespace MauiApp3.Class
+﻿namespace MauiApp3.Class
 {
     public class CharacterWatermarkProperty
     {
@@ -62,17 +55,6 @@ namespace MauiApp3.Class
                 {
                     color = "#" + color.Substring(3);
                 }
-            }
-        }
-
-        public FontStyle FontStyle
-        {
-            get
-            {
-                if (Bold && Italic) return FontStyle.BoldItalic;
-                else if (Bold) return FontStyle.Bold;
-                else if(Italic) return FontStyle.Italic;
-                else return FontStyle.Regular;
             }
         }
 
