@@ -36,8 +36,8 @@
             </Border.Shadow>
             <Label x:Name="msg" VerticalOptions="Center" HorizontalOptions="Center"/>
         </Border>
-        
-        <Border x:Name="loading" Grid.Row="2" HorizontalOptions="Center" VerticalOptions="Center" Background="#fff" ZIndex="10" Padding="50" StrokeThickness="0">
+
+        <Border x:Name="loading" IsVisible="false" Grid.Row="2" HorizontalOptions="Center" VerticalOptions="Center" Background="#fff" ZIndex="11" Padding="50" StrokeThickness="0">
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="10" />
             </Border.StrokeShape>

@@ -16,8 +16,9 @@ public partial class MainPage : ContentPage
     public MainPage()
     {
         InitializeComponent();
-        loading.IsVisible = false;
         ImagesFilePath= new List<string>();
+        properties = new Dictionary<string, ImageProperties>();
+        pics.Children.Clear();
         sKTypeface_B = SKTypeface.FromStream(FileSystem.OpenAppPackageFileAsync("HarmonyOS-Sans-Bold.ttf").Result);
         sKTypeface = SKTypeface.FromStream(FileSystem.OpenAppPackageFileAsync("HarmonyOS-Sans.ttf").Result);
         InitLogoes();
@@ -32,7 +33,6 @@ public partial class MainPage : ContentPage
         {
             Microsoft.Maui.Controls.Image image = new Microsoft.Maui.Controls.Image();
             image.Margin = new Thickness(2);
-            //image.Background = new Microsoft.Maui.Controls.SolidColorBrush(Microsoft.Maui.Graphics.Color.FromArgb("#fff"));
             image.HeightRequest = 30;
             image.WidthRequest = 30; 
             image.Source = f2.FullName;
@@ -72,20 +72,23 @@ public partial class MainPage : ContentPage
 
     private void OnCounterClicked(object sender, EventArgs e)
     {
-        SkiaSharpVersion(PickOptions.Images);
+        SkiaSharpVersion();
     }
 
-    public async void SkiaSharpVersion(PickOptions options)
+    public async void SkiaSharpVersion()
     {
         try
         {
-            var imageFileResults = await FilePicker.Default.PickMultipleAsync(options);
-            ImagesFilePath = new List<string>();
-            properties = new Dictionary<string, ImageProperties>();
-            pics.Children.Clear();
+            var item = await MediaPicker.Default.PickPhotoAsync();
+            var imageFileResults = new List<FileResult>
+            {
+                item
+            };
             loading.IsVisible = true;
+            await Task.Delay(1000);
             foreach (var imageFileResult in imageFileResults)
             {
+                await Task.Delay(100);
                 ImagesFilePath.Add(imageFileResult.FullPath);
                 selectedImagePath = imageFileResult.FullPath;
 
@@ -99,7 +102,7 @@ public partial class MainPage : ContentPage
                 pics.Children.Add(image);
 
                 var sm = await imageFileResult.OpenReadAsync();
-                var p = LoadExifInfo(sm);
+                var p = await LoadExifInfo(sm);
                 properties[imageFileResult.FullPath] = p;
             }
             loading.IsVisible = false;
@@ -320,52 +323,56 @@ p1 = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + "\\
         });
     }
 
-    private ImageProperties LoadExifInfo(Stream stream2 )
+    private Task<ImageProperties> LoadExifInfo(Stream stream2 )
     {
-        var properties = new ImageProperties("", "");
-        ExifLib.ExifReader reader = new ExifLib.ExifReader(stream2);
-        if (reader != null)
+        return Task<ImageProperties>.Run(() =>
         {
-            reader.GetTagValue(ExifTags.DateTimeOriginal, out DateTime date);
-            reader.GetTagValue(ExifTags.Model, out string model);
-            reader.GetTagValue(ExifTags.Make, out object make);
+            var properties = new ImageProperties("", "");
+            ExifLib.ExifReader reader = new ExifLib.ExifReader(stream2);
+            if (reader != null)
+            {
+                reader.GetTagValue(ExifTags.DateTimeOriginal, out DateTime date);
+                reader.GetTagValue(ExifTags.Model, out string model);
+                reader.GetTagValue(ExifTags.Make, out object make);
 
-            reader.GetTagValue(ExifTags.FNumber, out object fnumber);
+                reader.GetTagValue(ExifTags.FNumber, out object fnumber);
 
-            reader.GetTagValue(ExifTags.ExposureTime, out double exposureTime);
+                reader.GetTagValue(ExifTags.ExposureTime, out double exposureTime);
 
-            reader.GetTagValue(ExifTags.PhotographicSensitivity, out object iso2);
-            reader.GetTagValue(ExifTags.FocalLengthIn35mmFilm, out object focal);
+                reader.GetTagValue(ExifTags.PhotographicSensitivity, out object iso2);
+                reader.GetTagValue(ExifTags.FocalLengthIn35mmFilm, out object focal);
 
-            reader.GetTagValue(ExifTags.LensModel, out string lensModel);
-            properties.Config.LeftPosition1 = $"{make} {model}";
-            properties.Config.LeftPosition2 = date.ToString("yyyy/MM/dd HH:mm:ss");
-            int time = (int)(1/exposureTime);
-            properties.Config.RightPosition1 = $"F{Convert.ToInt32(fnumber)} 1/{time}S ISO{iso2} {focal}mm";
-            properties.Config.RightPosition2 = lensModel;
-        }
-        var config = Global.GetDefaultExifConfig(new Dictionary<string, object>());
-        var right1 = config[2];
-        var right2 = config[3];
-        var left1 = config[0];
-        var left2 = config[1];
-        if (string.IsNullOrEmpty(properties.Config.LeftPosition1))
-        {
-            properties.Config.LeftPosition1 = left1;
-        }
-        if (string.IsNullOrEmpty(properties.Config.LeftPosition2))
-        {
-            properties.Config.LeftPosition2 = left2;
-        }
-        if (string.IsNullOrEmpty(properties.Config.RightPosition1))
-        {
-            properties.Config.RightPosition1 = right1;
-        }
-        if (string.IsNullOrEmpty(properties.Config.RightPosition2))
-        {
-            properties.Config.RightPosition2 = right2;
-        }
-        return properties;
+                reader.GetTagValue(ExifTags.LensModel, out string lensModel);
+                properties.Config.LeftPosition1 = $"{make} {model}";
+                properties.Config.LeftPosition2 = date.ToString("yyyy/MM/dd HH:mm:ss");
+                int time = (int)(1/exposureTime);
+                properties.Config.RightPosition1 = $"F{Convert.ToInt32(fnumber)} 1/{time}S ISO{iso2} {focal}mm";
+                properties.Config.RightPosition2 = lensModel;
+            }
+            var config = Global.GetDefaultExifConfig(new Dictionary<string, object>());
+            var right1 = config[2];
+            var right2 = config[3];
+            var left1 = config[0];
+            var left2 = config[1];
+            if (string.IsNullOrEmpty(properties.Config.LeftPosition1))
+            {
+                properties.Config.LeftPosition1 = left1;
+            }
+            if (string.IsNullOrEmpty(properties.Config.LeftPosition2))
+            {
+                properties.Config.LeftPosition2 = left2;
+            }
+            if (string.IsNullOrEmpty(properties.Config.RightPosition1))
+            {
+                properties.Config.RightPosition1 = right1;
+            }
+            if (string.IsNullOrEmpty(properties.Config.RightPosition2))
+            {
+                properties.Config.RightPosition2 = right2;
+            }
+            return properties;
+        });
+        
     }
 
     private async void Button_Clicked(object sender, EventArgs e)
@@ -379,10 +386,12 @@ p1 = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + "\\
                 selectedImagePath = i;
                 if (properties.TryGetValue(i, out var p))
                 {
+                    await Task.Delay(100);
                     await CreateWatermark(p, sKTypeface, sKTypeface_B);
+                    await Task.Delay(100);
                 }
             }
-            ShowToast("保存成功");
+            ShowToast("保存成功...");
             loading.IsVisible = false;
         }
         catch (Exception ex)
@@ -396,11 +405,12 @@ p1 = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + "\\
 
     }
 
-
     private async void ImportLogoClick(object sender, EventArgs e)
     {
-        var logoFileResults = await FilePicker.Default.PickMultipleAsync(PickOptions.Images);
-        foreach(var logoFileResult in logoFileResults)
+        var item = await MediaPicker.Default.PickPhotoAsync();
+        if (item == null) return;
+        var logoFileResults = new List<FileResult> { item };
+        foreach (var logoFileResult in logoFileResults)
         {
             if (logoFileResult == null)
                 continue;
