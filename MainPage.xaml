@@ -15,17 +15,17 @@
                 Offset="1,1"
                 Opacity="0.2" />
             </Grid.Shadow>
-            <Button Grid.Row="0" HorizontalOptions="Start"  WidthRequest="95" Text="选择图片" Background="lightgray" TextColor="Black" BorderWidth="0" Margin="5,2,0,2" Clicked="OnCounterClicked" CornerRadius="2"/>
-            <Polyline Grid.Row="0" BackgroundColor="LightGray" WidthRequest="1" HorizontalOptions="Start" Margin="104,5,66,1"/>
-            <Button Grid.Row="0" HorizontalOptions="Start"  WidthRequest="95" Text="选择LOGO" Background="lightgray" TextColor="Black" BorderWidth="0" Margin="110,2,0,2" Clicked="ImportLogoClick" CornerRadius="2"/>
-            <ImageButton Source="rotate.png" Grid.Row="0" HorizontalOptions="Start" Background="lightgray" WidthRequest="40" BorderWidth="0" Margin="215,2,0,2" Clicked="RotateClick" CornerRadius="2" Padding="5"/>
+            <ImageButton Grid.Row="0" Source="addpic.png" HorizontalOptions="Start"  WidthRequest="46" HeightRequest="46"  Background="lightgray" BorderWidth="0" Padding="5" Margin="0,2" Clicked="OnCounterClicked" CornerRadius="2"/>
+            <Polyline Grid.Row="0" BackgroundColor="LightGray" WidthRequest="1" HorizontalOptions="Start" Margin="48,5,66,1"/>
+            <ImageButton Grid.Row="0" Source="logo.png" HorizontalOptions="Start"  WidthRequest="46" HeightRequest="46"  Background="lightgray"  BorderWidth="0"  Padding="5" Margin="51,2,0,2" Clicked="ImportLogoClick" CornerRadius="2"/>
+            <ImageButton Source="rotate.png" Grid.Row="0" HorizontalOptions="Start" Background="lightgray" WidthRequest="46" HeightRequest="46" BorderWidth="0" Margin="98,2,0,2" Clicked="RotateClick" CornerRadius="2" Padding="5"/>
 
-            <ImageButton Source="save.png" Grid.Row="0" HorizontalOptions="End"  WidthRequest="40" Background="lightgray" BorderWidth="0" Clicked="Button_Clicked" CornerRadius="2" Padding="5" Margin="2"/>
+            <ImageButton Source="save.png" Grid.Row="0" HorizontalOptions="End"  WidthRequest="46" HeightRequest="46" Background="lightgray" BorderWidth="0" Clicked="Button_Clicked" CornerRadius="2" Padding="5" Margin="2"/>
 
         </Grid>
         <Line Grid.Row="1" HeightRequest="1" BackgroundColor="LightGray" Margin="10,0"/>
         
-        <Border x:Name="toast" IsVisible="false" Grid.Row="2" HorizontalOptions="Center" VerticalOptions="Start" Background="#fff" ZIndex="10" Padding="20,10" StrokeThickness="0" Margin="0,20,0,0">
+        <Border x:Name="toast" IsVisible="true" Grid.Row="2" HorizontalOptions="Center" VerticalOptions="Start" Background="#fff" ZIndex="10" Padding="20,10" StrokeThickness="0" Margin="0,20,0,0">
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="5" />
             </Border.StrokeShape>
@@ -34,10 +34,10 @@
                 Offset="1,1"
                 Opacity="0.2" />
             </Border.Shadow>
-            <Label x:Name="msg" VerticalOptions="Center" HorizontalOptions="Center"/>
+            <Label x:Name="msg" Text="ceshi" VerticalOptions="Center" HorizontalOptions="Center"/>
         </Border>
 
-        <Border x:Name="loading" IsVisible="false" Grid.Row="2" HorizontalOptions="Center" VerticalOptions="Center" Background="#fff" ZIndex="11" Padding="50" StrokeThickness="0">
+        <Border x:Name="loading" IsVisible="true" Grid.Row="2" HorizontalOptions="Center" VerticalOptions="Center" Background="#fff" ZIndex="11" Padding="50" StrokeThickness="0">
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="10" />
             </Border.StrokeShape>
@@ -50,14 +50,14 @@
         </Border>
 
 
-        <Grid Grid.Row="2" Margin="10" Background="#f3f3f3" >
+        <Grid Grid.Row="2" Background="#f3f3f3" Margin="10,5">
             <Grid.Shadow>
                 <Shadow Brush="#666666"
                 Offset="1,1"
                 Opacity="0.2" />
             </Grid.Shadow>
             <Grid.RowDefinitions>
-                <RowDefinition Height="7*"/>
+                <RowDefinition Height="5*"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -73,7 +73,7 @@
                 HorizontalOptions="Center" />
 
             <Line Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" HeightRequest="1" BackgroundColor="LightGray" VerticalOptions="Start" Margin="10,0"/>
-            <ScrollView  Grid.Column="1"  Grid.Row="1">
+            <ScrollView  Grid.Column="1"  Grid.Row="1" Padding="0,10">
                 <FlexLayout x:Name="logoes" Wrap="Wrap" JustifyContent="Start">
                 </FlexLayout>
             </ScrollView>

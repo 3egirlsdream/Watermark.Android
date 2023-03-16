@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net6.0-android;net6.0-ios;net6.0-maccatalyst</TargetFrameworks>
+		<TargetFrameworks>net6.0-android;net6.0-maccatalyst</TargetFrameworks>
 		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net6.0-windows10.0.19041.0</TargetFrameworks>
 		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
 		<!-- <TargetFrameworks>$(TargetFrameworks);net6.0-tizen</TargetFrameworks> -->
@@ -103,6 +103,8 @@
 	  <None Remove="HarmonyOS-Sans.ttf" />
 	  <None Remove="Platforms\Android\Resources\mipmap\icon.png" />
 	  <None Remove="Resources\AppIcon\icon.png" />
+	  <None Remove="Resources\Images\addPic.png" />
+	  <None Remove="Resources\Images\logo.png" />
 	  <None Remove="Resources\Images\rotate.png" />
 	  <None Remove="Resources\Images\save.png" />
 	  <None Remove="Resources\Images\zfb.png" />

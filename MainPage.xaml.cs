@@ -2,6 +2,7 @@
 using JointWatermark.Class;
 using MauiApp3.Classes;
 using SkiaSharp;
+using System.Diagnostics;
 
 namespace MauiApp3;
 
@@ -15,13 +16,23 @@ public partial class MainPage : ContentPage
     Dictionary<string, ImageProperties> properties;
     public MainPage()
     {
-        InitializeComponent();
-        ImagesFilePath= new List<string>();
-        properties = new Dictionary<string, ImageProperties>();
-        pics.Children.Clear();
-        sKTypeface_B = SKTypeface.FromStream(FileSystem.OpenAppPackageFileAsync("HarmonyOS-Sans-Bold.ttf").Result);
-        sKTypeface = SKTypeface.FromStream(FileSystem.OpenAppPackageFileAsync("HarmonyOS-Sans.ttf").Result);
-        InitLogoes();
+        try
+        {
+            InitializeComponent();
+            //ImagesFilePath= new List<string>();
+            //properties = new Dictionary<string, ImageProperties>();
+            //pics.Children.Clear();
+            //toast.ZIndex = 0;
+            //loading.ZIndex = 0;
+            //sKTypeface_B = SKTypeface.FromStream(FileSystem.OpenAppPackageFileAsync("HarmonyOS-Sans-Bold.ttf").Result);
+            //sKTypeface = SKTypeface.FromStream(FileSystem.OpenAppPackageFileAsync("HarmonyOS-Sans.ttf").Result);
+            //InitLogoes();
+
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+        }
     }
 
     private void InitLogoes()
@@ -33,8 +44,8 @@ public partial class MainPage : ContentPage
         {
             Microsoft.Maui.Controls.Image image = new Microsoft.Maui.Controls.Image();
             image.Margin = new Thickness(2);
-            image.HeightRequest = 30;
-            image.WidthRequest = 30; 
+            image.WidthRequest = 80;
+            image.HeightRequest = 50;
             image.Source = f2.FullName;
             TapGestureRecognizer tap = new TapGestureRecognizer();
             tap.Tapped += Tap_Tapped;
@@ -48,7 +59,9 @@ public partial class MainPage : ContentPage
     {
         if (sender is Microsoft.Maui.Controls.Image im)
         {
+            loading.ZIndex = 10;
             currentLogoPath = ((Microsoft.Maui.Controls.FileImageSource)im.Source).File;
+            if (string.IsNullOrEmpty(selectedImagePath)) return;
             try
             {
                 if(properties.TryGetValue(selectedImagePath, out var p))
@@ -85,6 +98,7 @@ public partial class MainPage : ContentPage
             {
                 item
             };
+            loading.ZIndex = 10;
             loading.IsVisible = true;
             await Task.Delay(1000);
             foreach (var imageFileResult in imageFileResults)
@@ -92,7 +106,8 @@ public partial class MainPage : ContentPage
                 await Task.Delay(100);
                 ImagesFilePath.Add(imageFileResult.FullPath);
                 selectedImagePath = imageFileResult.FullPath;
-
+                var sm = await imageFileResult.OpenReadAsync();
+                var p = await LoadExifInfo(sm);
                 Microsoft.Maui.Controls.Image image = new Microsoft.Maui.Controls.Image();
                 image.Margin = new Thickness(2);
                 image.Background = new Microsoft.Maui.Controls.SolidColorBrush(Microsoft.Maui.Graphics.Color.FromArgb("#fff"));
@@ -102,8 +117,6 @@ public partial class MainPage : ContentPage
                 image.GestureRecognizers.Add(tap);
                 pics.Children.Add(image);
 
-                var sm = await imageFileResult.OpenReadAsync();
-                var p = await LoadExifInfo(sm);
                 properties[imageFileResult.FullPath] = p;
             }
             loading.IsVisible = false;
@@ -122,6 +135,7 @@ public partial class MainPage : ContentPage
     {
         if (sender is Microsoft.Maui.Controls.Image im)
         {
+            loading.ZIndex = 10;
             selectedImagePath = ((Microsoft.Maui.Controls.FileImageSource)im.Source).File;
             try
             {
@@ -324,31 +338,40 @@ p1 = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + "\\
         });
     }
 
-    private Task<ImageProperties> LoadExifInfo(Stream stream2 )
+    private Task<ImageProperties> LoadExifInfo(Stream stream2)
     {
         return Task<ImageProperties>.Run(() =>
         {
             var properties = new ImageProperties("", "");
-            ExifLib.ExifReader reader = new ExifLib.ExifReader(stream2);
-            if (reader != null)
+            try
             {
-                reader.GetTagValue(ExifTags.DateTimeOriginal, out DateTime date);
-                reader.GetTagValue(ExifTags.Model, out string model);
-                reader.GetTagValue(ExifTags.Make, out object make);
+                ExifLib.ExifReader reader = new ExifLib.ExifReader(stream2);
+                if (reader != null)
+                {
 
-                reader.GetTagValue(ExifTags.FNumber, out object fnumber);
+                    reader.GetTagValue(ExifTags.DateTimeOriginal, out DateTime date);
+                    reader.GetTagValue(ExifTags.Model, out string model);
+                    reader.GetTagValue(ExifTags.Make, out object make);
 
-                reader.GetTagValue(ExifTags.ExposureTime, out double exposureTime);
+                    reader.GetTagValue(ExifTags.FNumber, out object fnumber);
 
-                reader.GetTagValue(ExifTags.PhotographicSensitivity, out object iso2);
-                reader.GetTagValue(ExifTags.FocalLengthIn35mmFilm, out object focal);
+                    reader.GetTagValue(ExifTags.ExposureTime, out double exposureTime);
 
-                reader.GetTagValue(ExifTags.LensModel, out string lensModel);
-                properties.Config.LeftPosition1 = $"{make} {model}";
-                properties.Config.LeftPosition2 = date.ToString("yyyy/MM/dd HH:mm:ss");
-                int time = (int)(1/exposureTime);
-                properties.Config.RightPosition1 = $"F{Convert.ToInt32(fnumber)} 1/{time}S ISO{iso2} {focal}mm";
-                properties.Config.RightPosition2 = lensModel;
+                    reader.GetTagValue(ExifTags.PhotographicSensitivity, out object iso2);
+                    reader.GetTagValue(ExifTags.FocalLengthIn35mmFilm, out object focal);
+
+                    reader.GetTagValue(ExifTags.LensModel, out string lensModel);
+                    properties.Config.LeftPosition1 = $"{make} {model}";
+                    properties.Config.LeftPosition2 = date.ToString("yyyy/MM/dd HH:mm:ss");
+                    int time = (int)(1/exposureTime);
+                    properties.Config.RightPosition1 = $"F{Convert.ToInt32(fnumber)} 1/{time}S ISO{iso2} {focal}mm";
+                    properties.Config.RightPosition2 = lensModel;
+
+                }
+            }
+            catch
+            {
+                throw new Exception("无法识别EXIF信息");
             }
             var config = Global.GetDefaultExifConfig(new Dictionary<string, object>());
             var right1 = config[2];
@@ -373,7 +396,7 @@ p1 = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + "\\
             }
             return properties;
         });
-        
+
     }
 
     private async void Button_Clicked(object sender, EventArgs e)
@@ -388,7 +411,7 @@ p1 = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + "\\
                 if (properties.TryGetValue(i, out var p))
                 {
                     await Task.Delay(100);
-                    var name = i.Substring(i.LastIndexOf('/') + 1, i.LastIndexOf('.') - i.LastIndexOf('/') - 1) + "_";
+                    var name = i.Substring(i.LastIndexOf('/') + 1, i.LastIndexOf('.') - i.LastIndexOf('/') - 1);
                     p.Name = name;
                     await CreateWatermark(p, sKTypeface, sKTypeface_B);
                     await Task.Delay(100);
@@ -477,6 +500,7 @@ p1 = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + "\\
     private  void ShowToast(string msg)
     {
         this.msg.Text = msg;
+        toast.ZIndex = 10;
         toast.IsVisible = true;
         Task.Delay(3000).ContinueWith(t =>
         {
@@ -484,7 +508,7 @@ p1 = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + "\\
             {
                 toast.IsVisible = false;
             }));
-            
+
         });
     }
 }
