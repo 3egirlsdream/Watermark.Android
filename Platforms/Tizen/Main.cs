@@ -2,7 +2,7 @@ using System;
 using Microsoft.Maui;
 using Microsoft.Maui.Hosting;
 
-namespace MauiApp3;
+namespace Watermark.Android;
 
 class Program : MauiApplication
 {

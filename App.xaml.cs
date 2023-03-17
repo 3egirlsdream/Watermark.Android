@@ -1,4 +1,4 @@
-﻿namespace MauiApp3;
+﻿namespace Watermark.Android;
 
 public partial class App : Application
 {

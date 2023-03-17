@@ -1,7 +1,7 @@
-﻿using MauiApp3.Class;
+﻿using Watermark.Class;
 using System.Collections.ObjectModel;
 
-namespace JointWatermark.Class
+namespace Watermark.Class
 {
     public class ImageConfig 
     {

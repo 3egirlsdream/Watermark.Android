@@ -1,7 +1,7 @@
 ﻿using ObjCRuntime;
 using UIKit;
 
-namespace MauiApp3;
+namespace Watermark.Android;
 
 public class Program
 {

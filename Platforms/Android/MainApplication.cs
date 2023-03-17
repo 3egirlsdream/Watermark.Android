@@ -1,8 +1,7 @@
 ﻿using Android.App;
 using Android.Runtime;
-[assembly: UsesPermission(Android.Manifest.Permission.ReadExternalStorage)]
 
-namespace MauiApp3;
+namespace Watermark.Android;
 
 [Application]
 public class MainApplication : MauiApplication

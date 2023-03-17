@@ -1,4 +1,4 @@
-﻿namespace MauiApp3.Class
+﻿namespace Watermark.Class
 {
     public class CharacterWatermarkProperty
     {

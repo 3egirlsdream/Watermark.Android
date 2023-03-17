@@ -1,4 +1,4 @@
-﻿namespace JointWatermark.Class
+﻿namespace Watermark.Class
 {
     public class ImageProperties
     {

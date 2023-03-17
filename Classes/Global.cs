@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 
-namespace MauiApp3.Classes
+namespace Watermark.Classes
 {
     public class Global
     {

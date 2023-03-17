@@ -1,10 +1,11 @@
 ﻿using ExifLib;
-using JointWatermark.Class;
-using MauiApp3.Classes;
+using Watermark.Class;
+using Watermark.Classes;
 using SkiaSharp;
 using System.Diagnostics;
 
-namespace MauiApp3;
+namespace Watermark.Android;
+
 
 public partial class MainPage : ContentPage
 {
@@ -19,15 +20,14 @@ public partial class MainPage : ContentPage
         try
         {
             InitializeComponent();
-            //ImagesFilePath= new List<string>();
-            //properties = new Dictionary<string, ImageProperties>();
+            ImagesFilePath= new List<string>();
+            properties = new Dictionary<string, ImageProperties>();
             //pics.Children.Clear();
-            //toast.ZIndex = 0;
-            //loading.ZIndex = 0;
-            //sKTypeface_B = SKTypeface.FromStream(FileSystem.OpenAppPackageFileAsync("HarmonyOS-Sans-Bold.ttf").Result);
-            //sKTypeface = SKTypeface.FromStream(FileSystem.OpenAppPackageFileAsync("HarmonyOS-Sans.ttf").Result);
-            //InitLogoes();
-
+            toast.ZIndex = 0;
+            loading.ZIndex = 0;
+            sKTypeface_B = SKTypeface.FromStream(FileSystem.OpenAppPackageFileAsync("HarmonyOS-Sans-Bold.ttf").Result);
+            sKTypeface = SKTypeface.FromStream(FileSystem.OpenAppPackageFileAsync("HarmonyOS-Sans.ttf").Result);
+            InitLogoes();
         }
         catch (Exception ex)
         {
@@ -39,7 +39,8 @@ public partial class MainPage : ContentPage
     {
         var file = new DirectoryInfo(FileSystem.Current.CacheDirectory);
         var f = file.GetFiles();
-        logoes.Children.Clear();
+        logoes.ItemsSource = new List<string>() { };
+        var ls = new List<string>();
         foreach (var f2 in f)
         {
             Microsoft.Maui.Controls.Image image = new Microsoft.Maui.Controls.Image();
@@ -50,21 +51,23 @@ public partial class MainPage : ContentPage
             TapGestureRecognizer tap = new TapGestureRecognizer();
             tap.Tapped += Tap_Tapped;
             image.GestureRecognizers.Add(tap);
-            logoes.Children.Add(image);
+            // logoes.Children.Add(image);
+            ls.Add(f2.FullName);
             currentLogoPath = f2.FullName;
         }
+        logoes.ItemsSource = ls;
     }
 
     private async void Tap_Tapped(object sender, EventArgs e)
     {
         if (sender is Microsoft.Maui.Controls.Image im)
         {
-            loading.ZIndex = 10;
             currentLogoPath = ((Microsoft.Maui.Controls.FileImageSource)im.Source).File;
             if (string.IsNullOrEmpty(selectedImagePath)) return;
+            loading.ZIndex = 10;
             try
             {
-                if(properties.TryGetValue(selectedImagePath, out var p))
+                if (properties.TryGetValue(selectedImagePath, out var p))
                 {
                     loading.IsVisible = true;
                     await CreateWatermark(p, sKTypeface, sKTypeface_B, true);
@@ -73,7 +76,7 @@ public partial class MainPage : ContentPage
             }
             catch (Exception ex)
             {
-               ShowErrorMsg(ex.Message);
+                ShowErrorMsg(ex.Message);
             }
             finally
             {
@@ -104,24 +107,26 @@ public partial class MainPage : ContentPage
             foreach (var imageFileResult in imageFileResults)
             {
                 await Task.Delay(100);
-                ImagesFilePath.Add(imageFileResult.FullPath);
-                selectedImagePath = imageFileResult.FullPath;
                 var sm = await imageFileResult.OpenReadAsync();
                 var p = await LoadExifInfo(sm);
-                Microsoft.Maui.Controls.Image image = new Microsoft.Maui.Controls.Image();
-                image.Margin = new Thickness(2);
-                image.Background = new Microsoft.Maui.Controls.SolidColorBrush(Microsoft.Maui.Graphics.Color.FromArgb("#fff"));
-                image.Source = ImageSource.FromFile(imageFileResult.FullPath);
-                TapGestureRecognizer tap = new TapGestureRecognizer();
-                tap.Tapped += Tap_Tapped1;
-                image.GestureRecognizers.Add(tap);
-                pics.Children.Add(image);
+                ImagesFilePath.Add(imageFileResult.FullPath);
+                selectedImagePath = imageFileResult.FullPath;
+                //Microsoft.Maui.Controls.Image image = new Microsoft.Maui.Controls.Image();
+                //image.Margin = new Thickness(2);
+                //image.Background = new Microsoft.Maui.Controls.SolidColorBrush(Microsoft.Maui.Graphics.Color.FromArgb("#fff"));
+                //image.Source = ImageSource.FromFile(imageFileResult.FullPath);
+                //TapGestureRecognizer tap = new TapGestureRecognizer();
+                //tap.Tapped += Tap_Tapped1;
+                //image.GestureRecognizers.Add(tap);
+                //pics.Children.Add(image);
 
                 properties[imageFileResult.FullPath] = p;
             }
+            cv.ItemsSource = new List<string>();
+            cv.ItemsSource = ImagesFilePath;
             loading.IsVisible = false;
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             ShowErrorMsg(ex.Message);
         }
@@ -139,7 +144,7 @@ public partial class MainPage : ContentPage
             selectedImagePath = ((Microsoft.Maui.Controls.FileImageSource)im.Source).File;
             try
             {
-                if(properties.TryGetValue(selectedImagePath, out ImageProperties p))
+                if (properties.TryGetValue(selectedImagePath, out ImageProperties p))
                 {
                     loading.IsVisible = true;
                     await CreateWatermark(p, sKTypeface, sKTypeface_B, true);
@@ -174,9 +179,13 @@ public partial class MainPage : ContentPage
 
     private Task CreateWatermark(ImageProperties properties, SKTypeface sKTypeface, SKTypeface sKTypeface_B, bool isPreview = false)
     {
+        l1.Text = properties.Config.LeftPosition1;
+        l2.Text = properties.Config.LeftPosition2;
+        r1.Text = properties.Config.RightPosition1;
+        r2.Text = properties.Config.RightPosition2;
         return Task.Run(() =>
         {
-
+            
             if (string.IsNullOrEmpty(currentLogoPath))
             {
                 App.Current.Dispatcher.DispatchAsync(new Action(() =>
@@ -405,13 +414,13 @@ p1 = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + "\\
         {
             ShowToast("保存中...");
             loading.IsVisible = true;
-            foreach(var i in ImagesFilePath)
+            foreach (var i in ImagesFilePath)
             {
                 selectedImagePath = i;
                 if (properties.TryGetValue(i, out var p))
                 {
                     await Task.Delay(100);
-                    var name = i.Substring(i.LastIndexOf('/') + 1, i.LastIndexOf('.') - i.LastIndexOf('/') - 1);
+                    var name = i.Substring(i.LastIndexOf(System.IO.Path.DirectorySeparatorChar) + 1, i.LastIndexOf('.') - i.LastIndexOf(System.IO.Path.DirectorySeparatorChar) - 1);
                     p.Name = name;
                     await CreateWatermark(p, sKTypeface, sKTypeface_B);
                     await Task.Delay(100);
@@ -474,7 +483,7 @@ p1 = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + "\\
     {
         try
         {
-            if(properties.TryGetValue(selectedImagePath, out var p))
+            if (properties.TryGetValue(selectedImagePath, out var p))
             {
                 p.Config.RotateCount += 1;
                 loading.IsVisible = true;
@@ -482,7 +491,7 @@ p1 = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + "\\
                 loading.IsVisible = false;
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             ShowErrorMsg(ex.Message);
         }
@@ -497,7 +506,7 @@ p1 = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + "\\
         await DisplayAlert("出错了", msg, "关闭");
     }
 
-    private  void ShowToast(string msg)
+    private void ShowToast(string msg)
     {
         this.msg.Text = msg;
         toast.ZIndex = 10;
@@ -511,5 +520,35 @@ p1 = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + "\\
 
         });
     }
+
+    private void l1_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if(properties.TryGetValue(selectedImagePath, out var p))
+        {
+            p.Config.LeftPosition1 = l1.Text;
+        }
+    }
+    private void l2_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (properties.TryGetValue(selectedImagePath, out var p))
+        {
+            p.Config.LeftPosition2 = l2.Text;
+        }
+    }
+    private void r1_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (properties.TryGetValue(selectedImagePath, out var p))
+        {
+            p.Config.RightPosition1 = r1.Text;
+        }
+    }
+    private void r2_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (properties.TryGetValue(selectedImagePath, out var p))
+        {
+            p.Config.RightPosition2 = r2.Text;
+        }
+    }
 }
+
 

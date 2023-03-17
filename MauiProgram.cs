@@ -1,4 +1,4 @@
-﻿namespace MauiApp3;
+﻿namespace Watermark.Android;
 
 public static class MauiProgram
 {
@@ -11,8 +11,6 @@ public static class MauiProgram
 			{
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-				fonts.AddFont("HarmonyOS-Sans.ttf", "HarmonyOSSans");
-				fonts.AddFont("HarmonyOS-Sans-Bold.ttf", "HarmonyOSSansBold");
 			});
 
 		return builder.Build();

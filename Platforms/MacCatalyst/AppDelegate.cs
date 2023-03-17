@@ -1,6 +1,6 @@
 ﻿using Foundation;
 
-namespace MauiApp3;
+namespace Watermark.Android;
 
 [Register("AppDelegate")]
 public class AppDelegate : MauiUIApplicationDelegate

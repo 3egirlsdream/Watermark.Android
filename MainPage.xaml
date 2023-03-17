@@ -1,31 +1,31 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MauiApp3.MainPage" FlowDirection="MatchParent">
+             x:Class="Watermark.Android.MainPage">
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="50"/>
+            <RowDefinition Height="54"/>
             <RowDefinition Height="10"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Grid Margin="10,5" Background="#f3f3f3">
+        <Grid Margin="10,5" Background="#fff">
             <Grid.Shadow>
                 <Shadow Brush="#666666"
                 Offset="1,1"
                 Opacity="0.2" />
             </Grid.Shadow>
-            <ImageButton Grid.Row="0" Source="addpic.png" HorizontalOptions="Start"  WidthRequest="46" HeightRequest="46"  Background="lightgray" BorderWidth="0" Padding="5" Margin="0,2" Clicked="OnCounterClicked" CornerRadius="2"/>
-            <Polyline Grid.Row="0" BackgroundColor="LightGray" WidthRequest="1" HorizontalOptions="Start" Margin="48,5,66,1"/>
-            <ImageButton Grid.Row="0" Source="logo.png" HorizontalOptions="Start"  WidthRequest="46" HeightRequest="46"  Background="lightgray"  BorderWidth="0"  Padding="5" Margin="51,2,0,2" Clicked="ImportLogoClick" CornerRadius="2"/>
-            <ImageButton Source="rotate.png" Grid.Row="0" HorizontalOptions="Start" Background="lightgray" WidthRequest="46" HeightRequest="46" BorderWidth="0" Margin="98,2,0,2" Clicked="RotateClick" CornerRadius="2" Padding="5"/>
+            <ImageButton Grid.Row="0" Source="addpic.png" HorizontalOptions="Start"  WidthRequest="40" HeightRequest="40"  Background="lightgray" BorderWidth="0" Padding="5" Margin="0,2" Clicked="OnCounterClicked" CornerRadius="2"/>
+            <Polyline Grid.Row="0" BackgroundColor="LightGray" WidthRequest="1" HorizontalOptions="Start" Margin="42,5,66,1"/>
+            <ImageButton Grid.Row="0" Source="logo.png" HorizontalOptions="Start"  WidthRequest="40" HeightRequest="40"  Background="lightgray"  BorderWidth="0"  Padding="5" Margin="45,2,0,2" Clicked="ImportLogoClick" CornerRadius="2"/>
+            <ImageButton Source="rotate.png" Grid.Row="0" HorizontalOptions="Start" Background="lightgray" WidthRequest="40" HeightRequest="40" BorderWidth="0" Margin="92,2,0,2" Clicked="RotateClick" CornerRadius="2" Padding="5"/>
 
-            <ImageButton Source="save.png" Grid.Row="0" HorizontalOptions="End"  WidthRequest="46" HeightRequest="46" Background="lightgray" BorderWidth="0" Clicked="Button_Clicked" CornerRadius="2" Padding="5" Margin="2"/>
+            <ImageButton Source="save.png" Grid.Row="0" HorizontalOptions="End"  WidthRequest="40" HeightRequest="40" Background="lightgray" BorderWidth="0" Clicked="Button_Clicked" CornerRadius="2" Padding="5" Margin="2"/>
 
         </Grid>
         <Line Grid.Row="1" HeightRequest="1" BackgroundColor="LightGray" Margin="10,0"/>
         
-        <Border x:Name="toast" IsVisible="true" Grid.Row="2" HorizontalOptions="Center" VerticalOptions="Start" Background="#fff" ZIndex="10" Padding="20,10" StrokeThickness="0" Margin="0,20,0,0">
+        <Border x:Name="toast" IsVisible="true" Grid.Row="2" HorizontalOptions="Center" VerticalOptions="Start" Background="#fff" Padding="20,10" StrokeThickness="0" Margin="0,20,0,0">
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="5" />
             </Border.StrokeShape>
@@ -37,7 +37,7 @@
             <Label x:Name="msg" Text="ceshi" VerticalOptions="Center" HorizontalOptions="Center"/>
         </Border>
 
-        <Border x:Name="loading" IsVisible="true" Grid.Row="2" HorizontalOptions="Center" VerticalOptions="Center" Background="#fff" ZIndex="11" Padding="50" StrokeThickness="0">
+        <Border x:Name="loading" IsVisible="true" Grid.Row="2" HorizontalOptions="Center" VerticalOptions="Center" Background="#fff" Padding="50" StrokeThickness="0">
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="10" />
             </Border.StrokeShape>
@@ -57,26 +57,83 @@
                 Opacity="0.2" />
             </Grid.Shadow>
             <Grid.RowDefinitions>
+                <RowDefinition Height="110"/>
                 <RowDefinition Height="5*"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="110"/>
             </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="4*"/>
-            </Grid.ColumnDefinitions>
-            <Polyline Grid.Column="0" Grid.RowSpan="2" BackgroundColor="LightGray" WidthRequest="1" HorizontalOptions="End" Margin="0,5,0,5"/>
-            <StackLayout Grid.Column="0" x:Name="pics" Margin="5"
-                   VerticalOptions="Start"
-                HorizontalOptions="Start" />
-            <Image Grid.Column="2" x:Name="preview" Margin="5" 
+            <Line Grid.Row="1" HeightRequest="1" BackgroundColor="LightGray" VerticalOptions="Start" Margin="10,0"/>
+            <Border Margin="10" Padding="5" Grid.Row="0" StrokeThickness="0" Background="#e3e3e3">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="5" />
+                </Border.StrokeShape>
+                <Border.Shadow>
+                    <Shadow Brush="#666666"
+                Offset="1,1"
+                Opacity="0.1" />
+                </Border.Shadow>
+                <CollectionView x:Name="cv" >
+                    <CollectionView.ItemsLayout >
+                        <LinearItemsLayout Orientation="Horizontal"/>
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Image Source="{Binding}" HeightRequest="80" WidthRequest="80" Aspect="Fill">
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="Tap_Tapped1"/>
+                                </Image.GestureRecognizers>
+                            </Image>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Border>
+            
+            <Image Grid.Column="2" Grid.Row="1" x:Name="preview" Margin="5" 
                    VerticalOptions="Start"
                 HorizontalOptions="Center" />
+            <StackLayout Grid.Row="2" Margin="0,5">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Entry Background="#e3e3e3" x:Name="l1" Grid.Row="0" Grid.Column="0" Margin="10,2,1,2" TextChanged="l1_TextChanged"/>
+                    <Entry Background="#e3e3e3" x:Name="l2" Grid.Row="1" Grid.Column="0" Margin="10,2,1,2" TextChanged="l2_TextChanged"/>
+                    <Entry Background="#e3e3e3" x:Name="r1" Grid.Row="0" Grid.Column="1" Margin="10,2,1,2" TextChanged="r1_TextChanged"/>
+                    <Entry Background="#e3e3e3" x:Name="r2" Grid.Row="1" Grid.Column="1" Margin="10,2,1,2" TextChanged="r2_TextChanged"/>
+                </Grid>
+            </StackLayout>
 
-            <Line Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" HeightRequest="1" BackgroundColor="LightGray" VerticalOptions="Start" Margin="10,0"/>
-            <ScrollView  Grid.Column="1"  Grid.Row="1" Padding="0,10">
-                <FlexLayout x:Name="logoes" Wrap="Wrap" JustifyContent="Start">
-                </FlexLayout>
-            </ScrollView>
+            <Line Grid.Row="3" x:Name="line" HeightRequest="1" BackgroundColor="LightGray" VerticalOptions="Start" Margin="10,0"/>
+            <Border Grid.Column="0"  Grid.Row="3" Grid.ColumnSpan="2" Padding="5" Margin="10" StrokeThickness="0" Background="#e3e3e3">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="5" />
+                </Border.StrokeShape>
+                <Border.Shadow>
+                    <Shadow Brush="#666666"
+                Offset="1,1"
+                Opacity="0.1" />
+                </Border.Shadow>
+                <CollectionView x:Name="logoes">
+                    <CollectionView.ItemsLayout >
+                        <LinearItemsLayout Orientation="Horizontal"/>
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Image Source="{Binding}" HeightRequest="80" WidthRequest="80" Aspect="Fill">
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="Tap_Tapped"/>
+                                </Image.GestureRecognizers>
+                            </Image>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Border>
+            
         </Grid>
     </Grid>
 
