@@ -25,6 +25,9 @@ public partial class MainPage : ContentPage
             //pics.Children.Clear();
             toast.ZIndex = 0;
             loading.ZIndex = 0;
+            previewBorder.ZIndex = 1;
+            preview.ZIndex = 10;
+            openPanel.ZIndex = 2;
             sKTypeface_B = SKTypeface.FromStream(FileSystem.OpenAppPackageFileAsync("HarmonyOS-Sans-Bold.ttf").Result);
             sKTypeface = SKTypeface.FromStream(FileSystem.OpenAppPackageFileAsync("HarmonyOS-Sans.ttf").Result);
             InitLogoes();
@@ -183,6 +186,7 @@ public partial class MainPage : ContentPage
         l2.Text = properties.Config.LeftPosition2;
         r1.Text = properties.Config.RightPosition1;
         r2.Text = properties.Config.RightPosition2;
+        slider.Text = properties.Config.BorderWidth + "";
         return Task.Run(() =>
         {
             
@@ -228,17 +232,18 @@ public partial class MainPage : ContentPage
                 SKBitmap logoResized = new SKBitmap(waterWidth, waterHeight);
                 logo.Resize(logoResized, SKBitmapResizeMethod.Lanczos3);
 
+                var borderWidth = (int)(properties.Config.BorderWidth * img.Width / 100.0);
 
-                using (SKBitmap outputBitmap = new SKBitmap(w, img.Height + (int)h))
+                using (SKBitmap outputBitmap = new SKBitmap(w + 2 * borderWidth, img.Height + (int)h + borderWidth))
                 {
                     using (SKCanvas canvas = new SKCanvas(outputBitmap))
                     {
-                        canvas.DrawBitmap(img, new SKRect(0, 0, img.Width, img.Height));
-
                         using (SKPaint paint = new SKPaint() { Color = SKColors.White })
                         {
-                            canvas.DrawRect(new SKRect(0, img.Height, img.Width, outputBitmap.Height), paint);
+                            canvas.DrawRect(new SKRect(0, 0, img.Width + 2 * borderWidth, outputBitmap.Height), paint);
                         }
+
+                        canvas.DrawBitmap(img, new SKRect(borderWidth, borderWidth, img.Width + borderWidth, img.Height + borderWidth));
 
                         var skPaint = new SKPaint
                         {
@@ -259,7 +264,7 @@ public partial class MainPage : ContentPage
                         //绘制第右侧一行文字
                         var start = w - TextSize.Width - padding_right.Width;
                         var startHeight = (h - twoLineWordTotalHeight) / 2 + TextSize.Height;
-                        var Params = new SKPoint(start, (int)startHeight);
+                        var Params = new SKPoint(start + borderWidth, (int)startHeight + borderWidth);
 
                         using (SKPaint textPaint = new SKPaint() { Color = SKColors.Black, TextSize = fontSize, Typeface = sKTypeface_B })
                         {
@@ -276,8 +281,8 @@ public partial class MainPage : ContentPage
 
                         //绘制竖线
                         var font20Size = MeasureText("A", sKTypeface, font20);
-                        var lStart = new SKPoint(Params.X - (int)(oneSize.Width * 0.6), (int)(0.5*(h - logoResized.Height)));
-                        var lEnd = new SKPoint(lStart.X, (int)(h - lStart.Y));
+                        var lStart = new SKPoint(Params.X - (int)(oneSize.Width * 0.6), (int)(0.5*(h - logoResized.Height)) + borderWidth );
+                        var lEnd = new SKPoint(lStart.X, (int)(h - lStart.Y + 2 * borderWidth));
 
                         using (SKPaint textPaint = new SKPaint() { Color = SKColors.LightGray, TextSize = 2 * fontxs, Typeface = sKTypeface })
                         {
@@ -286,7 +291,7 @@ public partial class MainPage : ContentPage
                         }
 
                         //绘制LOGO
-                        var line = new SKPoint((int)(lStart.X - (int)(oneSize.Width * 0.6) - logoResized.Width), (int)(0.5*(h - logoResized.Height)));
+                        var line = new SKPoint((int)(lStart.X - (int)(oneSize.Width * 0.6) - logoResized.Width), (int)(0.5*(h - logoResized.Height) + borderWidth));
                         using (SKPaint textPaint = new SKPaint() { Color = SKColors.LightGray, TextSize = 2 * fontxs, Typeface = sKTypeface })
                         {
                             SKImage image2 = SKImage.FromBitmap(logoResized);
@@ -298,7 +303,7 @@ public partial class MainPage : ContentPage
 
                         //绘制设备信息
                         var font28 = (34 * fontxs);
-                        var Producer = new SKPoint((int)(leftWidth), Params.Y);
+                        var Producer = new SKPoint((int)(leftWidth + borderWidth), Params.Y);
                         using (SKPaint textPaint = new SKPaint() { Color = SKColors.Black, TextSize = font28, Typeface = sKTypeface_B })
                         {
                             canvas.DrawText(properties.Config.LeftPosition1, new SKPoint(Producer.X, (int)Producer.Y + img.Height), textPaint);
@@ -547,6 +552,48 @@ p1 = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + "\\
         if (properties.TryGetValue(selectedImagePath, out var p))
         {
             p.Config.RightPosition2 = r2.Text;
+        }
+    }
+
+    private void ImageButton_Clicked(object sender, EventArgs e)
+    {
+
+    }
+
+    private void ClosePanelClick(object sender, EventArgs e)
+    {
+        panel.IsVisible = false;
+    }
+
+    private void openPanelClick(object sender, EventArgs e)
+    {
+        panel.ZIndex = 2;
+        panel.IsVisible = true;
+    }
+
+    private void subClick(object sender, EventArgs e)
+    {
+        if (string.IsNullOrEmpty(selectedImagePath)) return;
+        if(properties.TryGetValue(selectedImagePath, out var p))
+        {
+            if (p.Config.BorderWidth >= 1)
+            {
+                p.Config.BorderWidth -= 1;
+                slider.Text = p.Config.BorderWidth + "";
+            }
+        }
+    }
+
+    private void plusClick(object sender, EventArgs e)
+    {
+        if (string.IsNullOrEmpty(selectedImagePath)) return;
+        if (properties.TryGetValue(selectedImagePath, out var p))
+        {
+            if (p.Config.BorderWidth < 10)
+            {
+                p.Config.BorderWidth += 1;
+                slider.Text = p.Config.BorderWidth + "";
+            }
         }
     }
 }

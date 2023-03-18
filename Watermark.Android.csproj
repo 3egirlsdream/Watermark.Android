@@ -19,7 +19,7 @@
 		<ApplicationIdGuid>9c927b04-3561-410e-b285-cee1c41c44bf</ApplicationIdGuid>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>1.1</ApplicationDisplayVersion>
+		<ApplicationDisplayVersion>1.2</ApplicationDisplayVersion>
 		<ApplicationVersion>1</ApplicationVersion>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
@@ -86,9 +86,13 @@
 	  <None Remove="HarmonyOS-Sans-Bold.ttf" />
 	  <None Remove="HarmonyOS-Sans.ttf" />
 	  <None Remove="Resources\Images\addpic.png" />
+	  <None Remove="Resources\Images\down.png" />
 	  <None Remove="Resources\Images\logo.png" />
+	  <None Remove="Resources\Images\plus.png" />
 	  <None Remove="Resources\Images\rotate.png" />
 	  <None Remove="Resources\Images\save.png" />
+	  <None Remove="Resources\Images\sub.png" />
+	  <None Remove="Resources\Images\up.png" />
 	</ItemGroup>
 
 	<ItemGroup>
